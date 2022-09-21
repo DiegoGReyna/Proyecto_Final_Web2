@@ -12,7 +12,7 @@ const {
 } = require('../dtos/users.dto');
 
 router.get(
-  '/:mail',
+  '/login/:mail',
   validatorHandler(getUserByMail, 'params'),
   async (req, res, next) => {
     try {
@@ -28,6 +28,7 @@ router.get(
     }
   }
 );
+
 
 router.get(
   '/',
