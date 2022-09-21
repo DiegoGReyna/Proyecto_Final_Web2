@@ -29,6 +29,24 @@ router.get(
   }
 );
 
+router.get(
+  '/:id',
+  validatorHandler(getUserId, 'params'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const idInt = parseInt(id);
+      const user = await service.get(idInt);
+      res.json({
+        success: true,
+        message: 'User found',
+        data: user,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 router.get(
   '/',

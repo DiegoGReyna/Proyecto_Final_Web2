@@ -22,11 +22,17 @@ class UserService {
 
   async login(mail){
     var login = this.users.find((x) => x.mail === mail && x.isActive === true);
-    validateData(login, NOTFOUND, 'No encontrado', (data) => !data);
+    validateData(login, NOTFOUND, 'User not found', (data) => !data);
     var data = {};
     data.name = login.name;
     data.password = login.password;
     return data;
+  }
+
+  async get(id){
+    var user = this.users.find((x) => x.id === id && x.isActive === true);
+    validateData(user, NOTFOUND, 'User not found', (data) => !data);
+    return user;
   }
 
   async register(data){
