@@ -1,6 +1,6 @@
 const faker = require('faker');
 const boom = require('@hapi/boom');
-const { validateData, NOTFOUND, CONFLICT } = require('../utils');
+const { validateData, NOTFOUND} = require('../utils');
 class UserService {
   constructor() {
     this.users = [];
