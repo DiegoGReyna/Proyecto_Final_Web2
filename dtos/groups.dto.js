@@ -7,6 +7,7 @@ const name = Joi.string().min(1).max(50);
 const desc = Joi.string().min(1).max(200);
 const creator = Joi.number().integer();
 
+
 const getGroupId = Joi.object({
   groupId: groupId.required()
 });
