@@ -4,24 +4,48 @@ const GroupService = require('../services/groups.service');
 const validatorHandler = require('../middlewares/validator.handler');
 const service = new GroupService();
 const {
-  registerUser,
-  getUserId,
-  editUser,
-  editUserComplete
+  getUserId
 } = require('../dtos/users.dto');
 
+const {
+  createGroup,
+  getGroupId,
+  editGroup,
+  addMemberId,
+  addMemberRole
+ } = require('../dtos/groups.dto');
+
 router.get(
-  '/:id/quests',
-  validatorHandler(getUserId, 'params'),
+  '/:groupId/quests',
+  validatorHandler(getGroupId, 'params'),
   async (req, res, next) => {
     try {
-      const { id } = req.params;
-      const idInt = parseInt(id);
-      const quests = await service.getQuests(idInt);
+      const { groupId } = req.params;
+      const groupIdInt = parseInt(groupId);
+      const quests = await service.getQuests(groupIdInt);
       res.json({
         success: true,
         message: 'Quests found',
         data: quests,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get(
+  '/:groupId/members',
+  validatorHandler(getGroupId, 'params'),
+  async (req, res, next) => {
+    try {
+      const { groupId } = req.params;
+      const groupIdInt = parseInt(groupId);
+      const members = await service.getMembers(groupIdInt);
+      res.json({
+        success: true,
+        message: 'Members found',
+        data: members,
       });
     } catch (error) {
       next(error);
@@ -55,7 +79,7 @@ router.get(
       const user = await service.getAll();
       res.json({
         success: true,
-        message: 'Users found',
+        message: 'Groups found',
         data: user,
       });
     } catch (error) {
@@ -65,16 +89,18 @@ router.get(
 );
 
 router.post(
-  '/',
-  validatorHandler(registerUser, 'body'),
+  '/creator/:id',
+  validatorHandler(createGroup, 'body'),
   async (req, res, next) => {
     const body = req.body;
     try {
-      const newUser = await service.register(body);
+      const { id } = req.params;
+      const idInt = parseInt(id);
+      const newGroup = await service.create(idInt, body);
       res.json({
         success: true,
-        message: 'User created successfully',
-        data: newUser
+        message: 'Group created successfully',
+        data: newGroup
       });
     } catch (error) {
       next(error);
@@ -83,62 +109,85 @@ router.post(
 );
 
 router.patch(
-  '/:id',
-  validatorHandler(getUserId, 'params'),
-  validatorHandler(editUser, 'body'),
-  async (req, res) => {
+  '/:groupId',
+  validatorHandler(getGroupId, 'params'),
+  validatorHandler(editGroup, 'body'),
+  async (req, res, next) => {
     try {
-      const { id } = req.params;
-      const idInt = parseInt(id);
+      const { groupId } = req.params;
+      const idInt = parseInt(groupId);
       const body = req.body;
-      const user = await service.edit(idInt, body);
+      const group = await service.edit(idInt, body);
       res.json({
-        message: 'User edited succcessfully',
-        data: user,
-        id,
+        message: 'Group edited succcessfully',
+        data: group
       });
     } catch (error) {
-      res.status(404).json({
-        message: error.message,
-      });
+      next(error);
     }
   }
 );
 
-router.put(
-  '/:id',
-  validatorHandler(getUserId, 'params'),
-  validatorHandler(editUserComplete, 'body'),
-  async (req, res) => {
+router.post(
+  '/:groupId/members/:id',
+  validatorHandler(addMemberId, 'params'),
+  validatorHandler(addMemberRole, 'body'),
+  async (req, res, next) => {
     try {
-      const { id } = req.params;
-      const idInt = parseInt(id);
+      const { groupId, id } = req.params;
+      const groupIdInt = parseInt(groupId);
+      const userIdInt = parseInt(id);
       const body = req.body;
-      const user = await service.editComplete(idInt, body);
+      const role = body.role;
+      const member = await service.addMember(groupIdInt, userIdInt, role);
       res.json({
-        message: 'Whole user edited successfully',
-        data: user,
-        id,
+        message: 'Member added successfully',
+        data: member
       });
     } catch (error) {
-      res.status(404).json({
-        message: error.message,
+        next(error);
+    }
+  }
+);
+
+router.patch(
+  '/:groupId/members/:id',
+  validatorHandler(addMemberId, 'params'),
+  validatorHandler(addMemberRole, 'body'),
+  async (req, res, next) => {
+    try {
+      const { groupId, id } = req.params;
+      const groupIdInt = parseInt(groupId);
+      const userIdInt = parseInt(id);
+      const body = req.body;
+      const role = body.role;
+      const members = await service.editMemberRole(groupIdInt, userIdInt, role);
+      res.json({
+        success: true,
+        message: 'Member edited successfully',
+        data: members,
       });
+    } catch (error) {
+      next(error);
     }
   }
 );
 
 router.delete(
-  '/:id',
-  validatorHandler(getUserId, 'params'),
-  async (req, res) => {
-    const { id } = req.params;
-    const idInt = parseInt(id);
-    await service.delete(idInt);
+  '/:groupId',
+  validatorHandler(getGroupId, 'params'),
+  async (req, res, next) => {
+    try{
+    const { groupId } = req.params;
+    const groupIdInt = parseInt(groupId);
+    await service.delete(groupIdInt);
     res.json({
-      message: 'User deleted successfully',
-      id,
+      message: 'Group deleted successfully',
+      groupId
     });
+   } catch(error){
+      next(error);
+    }
   }
 );
 

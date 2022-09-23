@@ -35,6 +35,16 @@ class UserService {
     return user;
   }
 
+  async getIdByMail(mail){
+    var user = this.users.find((x) => x.mail === mail && x.isActive === true);
+    validateData(user, NOTFOUND, 'User not found', (data) => !data);
+    var data = {};
+    data.id = user.id;
+    data.name = user.name;
+    data.mail = user.mail
+    return data;
+  }
+
   async register(data){
     var nextIndex = this.users.length;
     const newUser = {
@@ -73,7 +83,7 @@ class UserService {
   }
 
   async delete(id) {
-    const index = this.users.findIndex((item) => item.id == id);
+    const index = this.users.findIndex((item) => item.id === id);
     if (index === -1) {
       if (index === -1) throw boom.notFound('User not found');
     }

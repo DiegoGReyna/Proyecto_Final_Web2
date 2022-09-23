@@ -49,6 +49,24 @@ router.get(
 );
 
 router.get(
+  '/byMail/:mail',
+  validatorHandler(getUserByMail, 'params'),
+  async (req, res, next) => {
+    try {
+      const { mail } = req.params;
+      const user = await service.getIdByMail(mail);
+      res.json({
+        success: true,
+        message: 'User found',
+        data: user,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get(
   '/',
   async (req, res, next) => {
     try {
@@ -86,7 +104,7 @@ router.patch(
   '/:id',
   validatorHandler(getUserId, 'params'),
   validatorHandler(editUser, 'body'),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const { id } = req.params;
       const idInt = parseInt(id);
@@ -98,9 +116,7 @@ router.patch(
         id,
       });
     } catch (error) {
-      res.status(404).json({
-        message: error.message,
-      });
+      next(error);
     }
   }
 );
@@ -109,7 +125,7 @@ router.put(
   '/:id',
   validatorHandler(getUserId, 'params'),
   validatorHandler(editUserComplete, 'body'),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const { id } = req.params;
       const idInt = parseInt(id);
@@ -121,9 +137,7 @@ router.put(
         id,
       });
     } catch (error) {
-      res.status(404).json({
-        message: error.message,
-      });
+      next(error);
     }
   }
 );
