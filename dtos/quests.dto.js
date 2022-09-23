@@ -10,19 +10,28 @@ const end = Joi.date();
 const isEnded = Joi.boolean().strict();
 
 const getQuestId = Joi.object({
-  id: id.required(),
+  questId: id.required(),
 });
 
 const createQuest = Joi.object({
-  isActive: isActive.required(),
   name: name.required(),
   desc: desc.required(),
   start: start.required(),
   end: end.required()
 });
 
+const editQuest = Joi.object({
+  name: name,
+  desc: desc,
+  start: start,
+  end: end,
+  isActive: isActive,
+  isEnded: isEnded
+});
+
 
 module.exports = {
   getQuestId,
-  createQuest
+  createQuest,
+  editQuest
 };

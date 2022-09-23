@@ -145,14 +145,18 @@ router.put(
 router.delete(
   '/:id',
   validatorHandler(getUserId, 'params'),
-  async (req, res) => {
-    const { id } = req.params;
-    const idInt = parseInt(id);
-    await service.delete(idInt);
-    res.json({
-      message: 'User deleted successfully',
-      id,
-    });
+  async (req, res, next) => {
+    try{
+      const { id } = req.params;
+      const idInt = parseInt(id);
+      await service.delete(idInt);
+      res.json({
+        message: 'User deleted successfully',
+        id,
+      });
+    } catch(error){
+      next(error);
+    }
   }
 );
 

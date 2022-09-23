@@ -3,6 +3,7 @@ const usersRouter = require('./users.router');
 const groupsRouter = require('./groups.router');
 const achievementsRouter = require('./achievements.router');
 const rateMembers = require('./rateMembers.router');
+const questsRouter = require('./quests.router');
 const express = require('express');
 
 function routerApi(app) {
@@ -13,6 +14,8 @@ function routerApi(app) {
   router.use('/groups', groupsRouter);
   router.use('/achievements', achievementsRouter);
   router.use('/rateMembers', rateMembers);
+  router.use('/quests', questsRouter);
+
 }
 
 module.exports = routerApi;
