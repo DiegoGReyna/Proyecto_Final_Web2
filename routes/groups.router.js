@@ -54,6 +54,25 @@ router.get(
 );
 
 router.get(
+  '/:groupId/roles',
+  validatorHandler(getGroupId, 'params'),
+  async (req, res, next) => {
+    try {
+      const { groupId } = req.params;
+      const groupIdInt = parseInt(groupId);
+      const members = await service.getRoles(groupIdInt);
+      res.json({
+        success: true,
+        message: 'Roles found',
+        data: members,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get(
   '/user/:id',
   validatorHandler(getUserId, 'params'),
   async (req, res, next) => {
@@ -76,17 +95,37 @@ router.get(
   '/',
   async (req, res, next) => {
     try {
-      const user = await service.getAll();
+      const groups = await service.getAll();
       res.json({
         success: true,
         message: 'Groups found',
-        data: user,
+        data: groups,
       });
     } catch (error) {
       next(error);
     }
   }
 );
+
+router.get(
+  '/:groupId',
+  validatorHandler(getGroupId, 'params'),
+  async (req, res, next) => {
+    try {
+      const { groupId } = req.params;
+      const groupIdInt = parseInt(groupId);
+      const groups = await service.getById(groupIdInt);
+      res.json({
+        success: true,
+        message: 'Group found',
+        data: groups,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 
 router.post(
   '/creator/:id',

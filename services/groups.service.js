@@ -52,6 +52,12 @@ class GroupService {
     return groups;
   }
 
+  async getById(id){
+    var group = this.groups.find((x) => x.id === id && x.isActive === true);
+    validateData(group, NOTFOUND, 'Group not found', (data) => !data);
+    return group;
+  }
+
   async create(creator, data){
     var nextIndex = this.groups.length;
     const newGroup = {
@@ -130,6 +136,23 @@ class GroupService {
     });
 
     return members;
+  }
+
+  async getRoles(groupId){
+    const index = this.groups.findIndex((item) => item.id === groupId);
+
+    if (index === -1) throw boom.notFound('Group not found');
+
+    var currentGroup = this.groups[index];
+    var roles = [];
+    currentGroup.roles.forEach(element => {
+      var data = {};
+      data.id = element;
+      data.role = faker.name.jobTitle();
+      roles.push(data);
+    });
+
+    return roles;
   }
 
   async delete(id) {
