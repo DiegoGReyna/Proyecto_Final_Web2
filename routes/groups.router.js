@@ -191,4 +191,23 @@ router.delete(
   }
 );
 
+router.delete(
+  '/:groupId/members/:id',
+  validatorHandler(addMemberId, 'params'),
+  async (req, res, next) => {
+    try{
+    const { groupId, id } = req.params;
+    const userIdInt = parseInt(id);
+    const groupIdInt = parseInt(groupId);
+    await service.deleteMember(groupIdInt, userIdInt);
+    res.json({
+      message: 'Member deleted successfully',
+      groupId
+    });
+   } catch(error){
+      next(error);
+    }
+  }
+);
+
 module.exports = router;

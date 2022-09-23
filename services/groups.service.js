@@ -144,6 +144,25 @@ class GroupService {
     };
   }
 
+  async deleteMember(groupId, userId) {
+    const index = this.groups.findIndex((item) => item.id === groupId);
+    if (index === -1) {
+      if (index === -1) throw boom.notFound('Group not found');
+    }
+
+    var currentGroup = this.groups[index];
+    if(!currentGroup.members.includes(userId)) throw boom.notFound('Member not found');
+
+    if(currentGroup.creator === userId) throw boom.conflict('Cannot delete group creator');
+
+    const memberIndex = currentGroup.members.findIndex((item) => item === userId);
+    this.groups[index].members.splice(memberIndex, 1);
+    return {
+      message: 'Member deleted successfully',
+      userId,
+    };
+  }
+
   async getAll(){
     var groups = this.groups;
     validateData(groups, NOTFOUND, 'No encontrado', (data) => !data);
