@@ -12,7 +12,8 @@ const {
   getGroupId,
   editGroup,
   addMemberId,
-  addMemberRole
+  addMemberRole,
+  createGroupQuest
  } = require('../dtos/groups.dto');
 
 router.get(
@@ -167,7 +168,7 @@ router.patch(
   }
 );
 
-router.post(
+router.patch(
   '/:groupId/members/:id',
   validatorHandler(addMemberId, 'params'),
   validatorHandler(addMemberRole, 'body'),
@@ -182,6 +183,26 @@ router.post(
       res.json({
         message: 'Member added successfully',
         data: member
+      });
+    } catch (error) {
+        next(error);
+    }
+  }
+);
+
+router.patch(
+  '/:groupId/quests',
+  validatorHandler(getGroupId, 'params'),
+  validatorHandler(createGroupQuest, 'body'),
+  async (req, res, next) => {
+    try {
+      const { groupId} = req.params;
+      const groupIdInt = parseInt(groupId);
+      const body = req.body;
+      const quest = await service.createGroupQuest(groupIdInt, body);
+      res.json({
+        message: 'Quest created successfully',
+        data: quest
       });
     } catch (error) {
         next(error);
@@ -241,6 +262,25 @@ router.delete(
     await service.deleteMember(groupIdInt, userIdInt);
     res.json({
       message: 'Member deleted successfully',
+      groupId
+    });
+   } catch(error){
+      next(error);
+    }
+  }
+);
+
+router.delete(
+  '/:groupId/quests/:id',
+  validatorHandler(addMemberId, 'params'),
+  async (req, res, next) => {
+    try{
+    const { groupId, id } = req.params;
+    const questIdInt = parseInt(id);
+    const groupIdInt = parseInt(groupId);
+    await service.deleteGroupQuest(groupIdInt, questIdInt);
+    res.json({
+      message: 'Quest deleted successfully',
       groupId
     });
    } catch(error){

@@ -19,9 +19,9 @@ class GroupService {
         members: [index, faker.datatype.number({max:99, min:0, precision: 1.00}), faker.datatype.number({max:99, min:0, precision: 1.00})],
         membersInfo: 'localhost:3000/api/v1/groups/'+index+'/members',
         quests: [faker.datatype.number({max:99, min:0, precision: 1.00}), faker.datatype.number({max:99, min:0, precision: 1.00}), faker.datatype.number({max:99, min:0, precision: 1.00})],
-        questsInfo: 'localhost:3000/api/v1/quests/groups/'+index,
+        questsInfo: 'localhost:3000/api/v1/groups/'+index+'quests',
         roles: [index*3, index*3+1, index*3+2],
-        rolesInfo: 'localhost:3000/api/v1/quests/roles/'+index
+        rolesInfo: 'localhost:3000/api/v1/groups'+index+'/roles/'
       });
     }
   }
@@ -30,19 +30,19 @@ class GroupService {
     var group = this.groups.find((x) => x.id === id);
     validateData(group, NOTFOUND, 'Group not found', (data) => !data);
     var quests = [];
-    for (let index = 0; index < 3; index++) {
+    group.quests.forEach(element => {
       var data = {};
-      data.id = index;
-      data.name = 'Quest ' + index;
+      data.id = element;
+      data.name = 'Quest ' + element;
       data.desc = faker.lorem.sentences(2);
       data.start = faker.date.recent();
       data.end = faker.date.soon();
-      data.members = [index, faker.datatype.number({max:99, min:0, precision: 1.00}), faker.datatype.number({max:99, min:0, precision: 1.00})];
-      data.membersInfo = 'localhost:3000/api/v1/quest/'+index+'/members';
       data.isEnded = true;
       data.isActive = true;
+      data.lists = [],
+      data.listsInfo = 'localhost:3000/api/v1/quest/'+element+ '/lists'
       quests.push(data);
-    }
+    });
     return quests;
   }
 
@@ -99,6 +99,36 @@ class GroupService {
     var currentGroup = this.groups[index];
     currentGroup.members.push(userId)
     return currentGroup.members;
+  }
+
+  async createGroupQuest(groupId, data) {
+    //data aun no se implementa por la organzación de la info falsa, pero se usará cuando se use la BD
+    const index = this.groups.findIndex((item) => item.id === groupId);
+
+    if (index === -1) throw boom.notFound('Group not found');
+    //throw new Error('Product not found'); Forma tradicional
+
+    var currentGroup = this.groups[index];
+    currentGroup.quests.push(faker.datatype.number({precision:1.00}))
+    return data;
+  }
+
+  async deleteGroupQuest(groupId, questId) {
+    //data aun no se implementa por la organzación de la info falsa, pero se usará cuando se use la BD
+    const index = this.groups.findIndex((item) => item.id === groupId);
+
+    if (index === -1) throw boom.notFound('Group not found');
+    //throw new Error('Product not found'); Forma tradicional
+
+    var currentGroup = this.groups[index];
+    if(!currentGroup.quests.includes(questId)) throw boom.notFound('Quest not found');
+
+    const questIndex = currentGroup.quests.findIndex((item) => item === questId);
+    this.groups[index].quests.splice(questIndex, 1);
+    return {
+      message: 'Quest deleted successfully',
+      questId,
+    };
   }
 
   async editMemberRole(groupId, userId, role) {
@@ -188,7 +218,7 @@ class GroupService {
 
   async getAll(){
     var groups = this.groups;
-    validateData(groups, NOTFOUND, 'No encontrado', (data) => !data);
+    validateData(groups, NOTFOUND, 'Groups not found', (data) => !data);
     return groups;
   }
 

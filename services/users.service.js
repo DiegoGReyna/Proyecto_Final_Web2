@@ -96,7 +96,7 @@ class UserService {
 
   async getAll(){
     var users = this.users;
-    validateData(users, NOTFOUND, 'No encontrado', (data) => !data);
+    validateData(users, NOTFOUND, 'Users not found', (data) => !data);
     return users;
   }
 

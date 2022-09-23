@@ -26,6 +26,12 @@ const createGroup = Joi.object({
   desc: desc.required()
 });
 
+const createGroupQuest = Joi.object({
+  name: name.required(),
+  start: Joi.date().required(),
+  end: Joi.date().required()
+});
+
 const editGroup = Joi.object({
   isActive: isActive,
   name: name,
@@ -37,5 +43,6 @@ module.exports = {
   createGroup,
   editGroup,
   addMemberId,
-  addMemberRole
+  addMemberRole,
+  createGroupQuest
 };
