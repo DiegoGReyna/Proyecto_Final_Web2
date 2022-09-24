@@ -44,6 +44,9 @@ router.get(
   }
 );
 
+
+
+
 router.post(
   '/',
   validatorHandler(createQuest, 'body'),
@@ -100,5 +103,22 @@ router.delete(
     }
   }
 );
-
+router.get(
+  '/:questId/lists',
+  validatorHandler(getQuestId, 'params'),
+  async (req, res, next) => {
+    try {
+      const { questId } = req.params;
+      const questIdInt = parseInt(questId);
+      const members = await service.getLists(questIdInt );
+      res.json({
+        success: true,
+        message: 'Lists found',
+        data: members,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 module.exports = router;

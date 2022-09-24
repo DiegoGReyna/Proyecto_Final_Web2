@@ -17,7 +17,7 @@ class QuestService {
         end: faker.date.soon(),
         isEnded: true,
         isActive: true,
-        lists: [],
+        lists: [index, faker.datatype.number({max:99, min:0, precision: 1.00}), faker.datatype.number({max:99, min:0, precision: 1.00})],
         listsInfo: 'localhost:3000/api/v1/quest/'+index+ '/lists'
       });
     }
@@ -74,7 +74,22 @@ class QuestService {
     validateData(quests, NOTFOUND, 'Quests not found', (data) => !data);
     return quests;
   }
+  async getLists(ListId){
+    const index = this.quests.findIndex((item) => item.id === ListId);
 
+    if (index === -1) throw boom.notFound('Lists not found');
+
+    var currentList = this.quests[index];
+    var lists = [];
+    currentList.lists.forEach(element => {
+      var data = {};
+      data.id = element;
+      data.name = 'Lista ' + index;
+      lists.push(data);
+    });
+
+    return lists;
+  }
 }
 
 module.exports = QuestService;
