@@ -1,6 +1,6 @@
 const faker = require('faker');
 const boom = require('@hapi/boom');
-const { validateData, NOTFOUND, CONFLICT } = require('../utils');
+const { validateData, NOTFOUND} = require('../utils');
 class UserService {
   constructor() {
     this.users = [];
@@ -33,6 +33,16 @@ class UserService {
     var user = this.users.find((x) => x.id === id && x.isActive === true);
     validateData(user, NOTFOUND, 'User not found', (data) => !data);
     return user;
+  }
+
+  async getIdByMail(mail){
+    var user = this.users.find((x) => x.mail === mail && x.isActive === true);
+    validateData(user, NOTFOUND, 'User not found', (data) => !data);
+    var data = {};
+    data.id = user.id;
+    data.name = user.name;
+    data.mail = user.mail
+    return data;
   }
 
   async register(data){
@@ -73,7 +83,7 @@ class UserService {
   }
 
   async delete(id) {
-    const index = this.users.findIndex((item) => item.id == id);
+    const index = this.users.findIndex((item) => item.id === id);
     if (index === -1) {
       if (index === -1) throw boom.notFound('User not found');
     }
@@ -86,7 +96,7 @@ class UserService {
 
   async getAll(){
     var users = this.users;
-    validateData(users, NOTFOUND, 'No encontrado', (data) => !data);
+    validateData(users, NOTFOUND, 'Users not found', (data) => !data);
     return users;
   }
 
